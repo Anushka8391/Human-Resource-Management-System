@@ -11,8 +11,16 @@ const dashboardRoutes = require("./routes/dashboardRoutes");
 
 const app = express();
 
-const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:3000")
-  .split(",")
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : null,
+  process.env.NODE_ENV === "development" ? "http://localhost:3000" : null,
+]
+  .filter(Boolean)
+  .flatMap((value) => value.split(","))
   .map((origin) => origin.trim())
   .filter(Boolean);
 
