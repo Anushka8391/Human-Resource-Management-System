@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b3d91" />
+    <meta name="description" content="Human Resource Management System" />
+    <script>
+      (function () {
+        function isMetaMaskExtensionError(value) {
+          var text = String(value || "").toLowerCase();
+          return (
+            text.indexOf("metamask") !== -1 ||
+            text.indexOf("chrome-extension://") !== -1 ||
+            text.indexOf("inpage.js") !== -1
+          );
+        }
+
+        function suppressIfMetaMaskExtensionError(event, message) {
+          if (!isMetaMaskExtensionError(message)) {
+            return;
+          }
+
+          if (typeof event.preventDefault === "function") {
+            event.preventDefault();
+          }
+
+          if (typeof event.stopImmediatePropagation === "function") {
+            event.stopImmediatePropagation();
+          }
+        }
+
+        window.addEventListener(
+          "error",
+          function (event) {
+            var message =
+              (event && event.message) ||
+              (event && event.error && event.error.message) ||
+              "";
+            suppressIfMetaMaskExtensionError(event, message);
+          },
+          true
+        );
+
+        window.addEventListener(
+          "unhandledrejection",
+          function (event) {
+            var reason = event && event.reason;
+            var message =
+              (typeof reason === "string" && reason) ||
+              (reason && reason.message) ||
+              String(reason || "");
+            suppressIfMetaMaskExtensionError(event, message);
+          },
+          true
+        );
+      })();
+    </script>
+    <title>HRMS</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
