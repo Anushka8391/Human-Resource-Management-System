@@ -51,11 +51,25 @@ app.get("/api/health", (_req, res) => {
   res.json({ message: "HRMS API running" });
 });
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    message: "HRMS backend is running",
+    health: "/api/health",
+  });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/leaves", leaveRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+
+app.use((_req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
 
 app.use((err, _req, res, _next) => {
   console.error(err);
