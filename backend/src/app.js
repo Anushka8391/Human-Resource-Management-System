@@ -17,6 +17,8 @@ const allowedOrigins = [
   process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : null,
+  // Optional: comma-separated list of additional allowed origins (e.g. frontends)
+  process.env.ALLOWED_ORIGINS,
   process.env.NODE_ENV === "development" ? "http://localhost:3000" : null,
 ]
   .filter(Boolean)
@@ -30,12 +32,28 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow non-browser tools and same-origin calls without Origin header.
+      console.error('CORS origin callback invoked', { origin });
       if (!origin) {
         return callback(null, true);
       }
 
+      // Allow exact matches from configured allowedOrigins
+      console.error('CORS allowedOrigins', { allowedOrigins });
       if (allowedOrigins.includes(origin)) {
+        console.error('CORS allowed: exact match', origin);
         return callback(null, true);
+      }
+
+      // Allow Vercel-hosted frontends (convenience for preview deployments)
+      // e.g. any origin that ends with `.vercel.app`
+      try {
+        const url = new URL(origin);
+        if (url.hostname.endsWith(".vercel.app")) {
+          console.error('CORS allowed: vercel.app wildcard', url.hostname);
+          return callback(null, true);
+        }
+      } catch (e) {
+        // ignore parse errors
       }
 
       return callback(new Error("CORS origin not allowed"));
