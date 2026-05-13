@@ -115,4 +115,7 @@ Response shape for list APIs:
    }
 }
 ```
-#
+# Admin access
+
+admin mail = admin@hrms.com
+admin pass = admin123
